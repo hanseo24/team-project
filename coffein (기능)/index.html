@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Daily Caffeine Log & Sleep Timer</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: #F4F6F9;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      padding: 30px 15px;
+      min-height: 100vh;
+    }
+
+    .app-container {
+      width: 100%;
+      max-width: 800px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    header {
+      background: #FFFFFF;
+      padding: 24px;
+      border-radius: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 1.6rem;
+      color: #1E293B;
+      margin-bottom: 6px;
+    }
+
+    header p {
+      font-size: 0.9rem;
+      color: #64748B;
+    }
+
+    .main-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: #FFFFFF;
+      border-radius: 20px;
+      padding: 24px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+
+    .card h2 {
+      font-size: 1.15rem;
+      color: #0F172A;
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #475569;
+      margin-bottom: 6px;
+    }
+
+    select, input[type="time"] {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #CBD5E1;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      background: #F8FAFC;
+      outline: none;
+    }
+
+    .add-btn {
+      width: 100%;
+      padding: 14px;
+      background: #2563EB;
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-weight: bold;
+      font-size: 0.95rem;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+
+    .drink-list {
+      list-style: none;
+      margin-top: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 180px;
+      overflow-y: auto;
+    }
+
+    .drink-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      background: #F1F5F9;
+      border-radius: 10px;
+      font-size: 0.88rem;
+    }
+
+    .drink-item button {
+      background: #EF4444;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 4px 8px;
+      font-size: 0.75rem;
+      cursor: pointer;
+    }
+
+    .metric-box {
+      background: #F8FAFC;
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .metric-box .label {
+      font-size: 0.85rem;
+      color: #64748B;
+    }
+
+    .metric-box .value {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #0F172A;
+    }
+
+    .highlight-box {
+      background: #EFF6FF;
+      border: 1px solid #BFDBFE;
+      border-radius: 14px;
+      padding: 18px;
+      text-align: center;
+    }
+
+    .highlight-box .time {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #1D4ED8;
+      margin: 6px 0;
+    }
+
+    .gauge-bg {
+      width: 100%;
+      height: 12px;
+      background: #E2E8F0;
+      border-radius: 6px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+
+    .gauge-fill {
+      height: 100%;
+      width: 0%;
+      background: #3B82F6;
+      transition: width 0.4s ease, background-color 0.4s ease;
+    }
+
+    .water-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: #E0F2FE;
+      border-radius: 14px;
+      padding: 16px;
+      margin-top: 15px;
+    }
+
+    .water-btn {
+      background: #0284C7;
+      color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <header>
+      <h1>☕ Daily Caffeine Log & Sleep Timer</h1>
+      <p>오늘 마신 카페인을 기록하고 체내 반감기 기반의 안전한 숙면 시간을 확인하세요.</p>
+    </header>
+
+    <div class="main-grid">
+      <!-- 왼쪽: 카페인 기록 입력 -->
+      <div class="card">
+        <h2>📝 카페인 섭취 기록</h2>
+        
+        <div class="form-group">
+          <label for="drinkType">음료 종류</label>
+          <select id="drinkType">
+            <option value="95" data-name="아메리카노 (1잔)">☕ 아메리카노 (95mg)</option>
+            <option value="150" data-name="카페라떼 / 카푸치노">🥛 카페라떼 (150mg)</option>
+            <option value="130" data-name="에스프레소 2샷">☕ 에스프레소 2샷 (130mg)</option>
+            <option value="40" data-name="녹차 / 홍차">🍵 녹차 / 홍차 (40mg)</option>
+            <option value="100" data-name="에너지 드링크">⚡ 에너지 드링크 (100mg)</option>
+            <option value="30" data-name="콜라 / 초콜릿">🥤 콜라 / 초콜릿 (30mg)</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="drinkTime">섭취 시간</label>
+          <input type="time" id="drinkTime">
+        </div>
+
+        <button class="add-btn" onclick="addDrink()">+ 섭취 기록 추가하기</button>
+
+        <ul class="drink-list" id="drinkList"></ul>
+      </div>
+
+      <!-- 오른쪽: 분석 & 수면 타이머 -->
+      <div class="card">
+        <h2>🌙 체내 카페인 & 수면 분석</h2>
+
+        <div class="metric-box">
+          <div>
+            <div class="label">오늘 총 카페인 섭취량</div>
+            <div style="font-size: 0.75rem; color: #94A3B8;">성인 일일 권장량: 400mg</div>
+          </div>
+          <div class="value"><span id="totalCaffeine">0</span> <small style="font-size:0.9rem">mg</small></div>
+        </div>
+
+        <div style="margin-bottom: 16px;">
+          <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#64748B;">
+            <span>현재 남아있는 체내 카페인</span>
+            <span id="currentResidual">0 mg</span>
+          </div>
+          <div class="gauge-bg">
+            <div class="gauge-fill" id="gaugeFill"></div>
+          </div>
+        </div>
+
+        <div class="highlight-box">
+          <div style="font-size: 0.85rem; color: #475569;">💡 권장 숙면 가능 시간</div>
+          <div class="time" id="recommendedSleepTime">지금 바로 숙면 가능</div>
+          <div style="font-size: 0.78rem; color: #64748B;" id="sleepStatusText">체내 잔여 카페인이 수면 기준치(50mg) 이하입니다.</div>
+        </div>
+
+        <div class="water-box">
+          <div>
+            <div style="font-weight:bold; font-size:0.9rem; color:#0369A1;">💧 카페인 디톡스 물 섭취</div>
+            <div style="font-size:0.78rem; color:#0284C7;" id="waterText">오늘 마신 물: 0 ml (목표 1,000ml)</div>
+          </div>
+          <button class="water-btn" onclick="addWater()">+200ml 마심</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const now = new Date();
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    document.getElementById('drinkTime').value = hours + ':' + minutes;
+
+    let drinks = [];
+    let waterIntake = 0;
+
+    function addDrink() {
+      const select = document.getElementById('drinkType');
+      const caffeineAmount = parseInt(select.value);
+      const drinkName = select.options[select.selectedIndex].getAttribute('data-name');
+      const timeVal = document.getElementById('drinkTime').value;
+
+      if (!timeVal) {
+        alert('섭취 시간을 선택해 주세요!');
+        return;
+      }
+
+      drinks.push({
+        id: Date.now(),
+        name: drinkName,
+        caffeine: caffeineAmount,
+        time: timeVal
+      });
+
+      updateUI();
+    }
+
+    function removeDrink(id) {
+      drinks = drinks.filter(d => d.id !== id);
+      updateUI();
+    }
+
+    function addWater() {
+      waterIntake += 200;
+      document.getElementById('waterText').innerText = '오늘 마신 물: ' + waterIntake + ' ml (목표 1,000ml)';
+      updateUI();
+    }
+
+    function calculateCaffeine() {
+      let total = 0;
+      let currentResidualTotal = 0;
+      const now = new Date();
+
+      drinks.forEach(d => {
+        total += d.caffeine;
+
+        const timeParts = d.time.split(':');
+        const h = parseInt(timeParts[0]);
+        const m = parseInt(timeParts[1]);
+        
+        const drinkDate = new Date();
+        drinkDate.setHours(h, m, 0, 0);
+
+        let diffHours = (now - drinkDate) / (1000 * 60 * 60);
+        if (diffHours < 0) diffHours += 24;
+
+        const residual = d.caffeine * Math.pow(0.5, diffHours / 5);
+        currentResidualTotal += residual;
+      });
+
+      return {
+        total: total,
+        residual: Math.round(currentResidualTotal)
+      };
+    }
+
+    function updateUI() {
+      const listEl = document.getElementById('drinkList');
+      listEl.innerHTML = '';
+      drinks.forEach(d => {
+        const li = document.createElement('li');
+        li.className = 'drink-item';
+        li.innerHTML = '<span><strong>' + d.name + '</strong> (' + d.time + ') - ' + d.caffeine + 'mg</span><button onclick="removeDrink(' + d.id + ')">삭제</button>';
+        listEl.appendChild(li);
+      });
+
+      const data = calculateCaffeine();
+      document.getElementById('totalCaffeine').innerText = data.total;
+      document.getElementById('currentResidual').innerText = data.residual + ' mg';
+
+      let effectiveResidual = Math.max(0, data.residual - Math.floor(waterIntake / 250) * 5);
+
+      const gaugeFill = document.getElementById('gaugeFill');
+      const percentage = Math.min(100, (effectiveResidual / 200) * 100);
+      gaugeFill.style.width = percentage + '%';
+
+      if (effectiveResidual > 100) {
+        gaugeFill.style.backgroundColor = '#EF4444';
+      } else if (effectiveResidual > 50) {
+        gaugeFill.style.backgroundColor = '#F59E0B';
+      } else {
+        gaugeFill.style.backgroundColor = '#3B82F6';
+      }
+
+      const sleepTimeEl = document.getElementById('recommendedSleepTime');
+      const sleepStatusEl = document.getElementById('sleepStatusText');
+
+      if (effectiveResidual <= 50) {
+        sleepTimeEl.innerText = '지금 바로 숙면 가능';
+        sleepStatusEl.innerText = '체내 잔여 카페인이 수면 가능 기준치(50mg 이하)입니다.';
+      } else {
+        const hoursNeeded = 5 * Math.log2(effectiveResidual / 50);
+        const sleepTargetDate = new Date(Date.now() + hoursNeeded * 60 * 60 * 1000);
+
+        const targetH = String(sleepTargetDate.getHours()).padStart(2, '0');
+        const targetM = String(sleepTargetDate.getMinutes()).padStart(2, '0');
+
+        sleepTimeEl.innerText = '오늘 밤 ' + targetH + ':' + targetM + ' 이후';
+        sleepStatusEl.innerText = '수면 장애 없이 숙면하려면 체내 카페인이 50mg 이하로 떨어지는 위 시각 이후 취침을 권장합니다.';
+      }
+    }
+
+    updateUI();
+  </script>
+</body>
+</html>
