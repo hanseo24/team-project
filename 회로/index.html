@@ -1,0 +1,584 @@
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VOLTUNE | 전기 안전 관리</title>
+<style>
+:root {
+  --bg:#0b1712;
+  --panel:#12231b;
+  --panel2:#192d23;
+  --line:#294335;
+  --green:#8bd58a;
+  --green2:#b7e6a8;
+  --text:#eef5ef;
+  --muted:#91a99a;
+  --yellow:#f1c76c;
+  --red:#ff8178;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:Arial,"Noto Sans KR",sans-serif;font-size:14px;
+}
+button,input,select{font:inherit}
+button{cursor:pointer}
+.app{display:flex;min-height:100vh}
+.sidebar{
+  width:235px;flex-shrink:0;background:#0e1d15;
+  border-right:1px solid var(--line);padding:28px 16px;
+  display:flex;flex-direction:column;
+}
+.logo{font-size:25px;font-weight:800;letter-spacing:1px;padding:0 12px}
+.logo span{color:var(--green)}
+.tagline{color:var(--muted);font-size:11px;padding:8px 12px 30px}
+.menu-label{font-size:10px;color:#688271;letter-spacing:1.5px;padding:0 12px 12px}
+.nav{
+  width:100%;display:flex;align-items:center;gap:12px;
+  border:0;background:transparent;color:#9db2a3;
+  padding:14px 12px;border-radius:10px;text-align:left;margin-bottom:5px;
+}
+.nav:hover,.nav.active{background:#1c3527;color:var(--green)}
+.nav .ico{width:20px;text-align:center;font-size:17px}
+.side-note{
+  margin-top:auto;border:1px solid var(--line);background:var(--panel);
+  padding:15px;border-radius:12px;line-height:1.7;color:var(--muted);font-size:11px;
+}
+.side-note strong{color:var(--green2);display:block;margin-bottom:5px}
+main{flex:1;min-width:0;padding:30px 34px 50px;max-width:1600px;margin:0 auto;width:100%}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:30px}
+.eyebrow{font-size:10px;letter-spacing:2px;color:var(--green);margin-bottom:8px}
+h1{font-size:27px;margin:0;font-weight:700;letter-spacing:-.7px}
+.subtitle{color:var(--muted);margin-top:9px;font-size:12px;line-height:1.6}
+.status-pill{border:1px solid #31513b;background:#172b1e;color:var(--green2);border-radius:30px;padding:10px 14px;white-space:nowrap;font-size:11px}
+.page{display:none}
+.page.active{display:block}
+.grid{display:grid;gap:16px}
+.stats{grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:18px}
+.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.card{
+  background:var(--panel);border:1px solid var(--line);
+  border-radius:16px;padding:21px;min-width:0;
+}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:17px}
+.card-title{font-size:14px;font-weight:700}
+.small-label{font-size:11px;color:var(--muted)}
+.big-number{font-size:30px;font-weight:750;letter-spacing:-1px}
+.big-number small{font-size:13px;color:var(--muted);font-weight:400;letter-spacing:0}
+.stat-foot{font-size:11px;color:var(--muted);margin-top:8px;line-height:1.6}
+.green{color:var(--green)}
+.yellow{color:var(--yellow)}
+.red{color:var(--red)}
+.section-title{font-size:18px;margin:0 0 8px}
+.section-desc{color:var(--muted);font-size:12px;line-height:1.7;margin:0 0 22px}
+.section-top{margin-bottom:22px}
+.btn{
+  background:var(--green);color:#102015;border:0;border-radius:9px;
+  padding:11px 15px;font-weight:700;font-size:12px;
+}
+.btn:hover{background:var(--green2)}
+.btn.secondary{background:#1d3527;color:var(--green2);border:1px solid #365640}
+.btn.danger{background:#432522;color:#ffaaa1;border:1px solid #6d3a34}
+.btn.small{padding:8px 11px;font-size:11px}
+.field{display:flex;flex-direction:column;gap:8px;margin-bottom:17px}
+.field label{font-size:12px;color:#b7cbbd}
+input,select{
+  width:100%;background:#0c1a12;color:var(--text);
+  border:1px solid #31503d;border-radius:9px;padding:12px;
+  outline:none;min-width:0;
+}
+input:focus,select:focus{border-color:var(--green)}
+.help{font-size:11px;color:var(--muted);line-height:1.6}
+.appliance-list{display:flex;flex-direction:column;gap:9px;margin:14px 0}
+.appliance-row{
+  display:grid;grid-template-columns:minmax(0,1fr) 95px 74px 30px;
+  gap:8px;align-items:center;background:#0e1c14;
+  border:1px solid #263e30;padding:9px;border-radius:10px;
+}
+.appliance-row select,.appliance-row input{padding:9px;font-size:12px}
+.appliance-row .watts{font-size:11px;color:var(--muted);text-align:right}
+.remove{border:0;background:transparent;color:#bd8b83;font-size:19px}
+.summary-box{padding:16px;background:#0d1b13;border:1px solid var(--line);border-radius:12px;margin:16px 0}
+.summary-line{display:flex;justify-content:space-between;gap:10px;padding:7px 0;color:var(--muted);font-size:12px}
+.summary-line strong{color:var(--text)}
+.progress{height:9px;background:#27392d;border-radius:20px;overflow:hidden;margin:14px 0}
+.progress-fill{height:100%;width:0%;background:var(--green);border-radius:20px;transition:width .25s}
+.result-message{border-radius:10px;padding:13px;font-size:12px;line-height:1.7;background:#1a3021;color:var(--green2)}
+.result-message.warn{background:#352c18;color:#f1d18a}
+.result-message.alert{background:#3b211f;color:#ffaaa1}
+.gauge-wrap{display:flex;align-items:center;justify-content:center;flex-direction:column;padding:10px 0 20px}
+.gauge{width:210px;height:115px;position:relative;overflow:hidden}
+.gauge-arc{
+  width:210px;height:210px;border-radius:50%;
+  background:conic-gradient(from 270deg,#8bd58a 0deg,#8bd58a 110deg,#f1c76c 140deg,#ff8178 180deg,transparent 180deg);
+  -webkit-mask:radial-gradient(circle,transparent 59%,#000 60%);
+  mask:radial-gradient(circle,transparent 59%,#000 60%);
+}
+.gauge-cover{position:absolute;inset:0;display:flex;justify-content:center;align-items:flex-end;padding-bottom:2px}
+.gauge-value{font-size:30px;font-weight:800}
+.gauge-caption{color:var(--muted);font-size:11px;margin-top:8px}
+.device-presets{display:flex;flex-wrap:wrap;gap:7px;margin:12px 0 18px}
+.chip{border:1px solid #31503d;background:#12251a;color:#c4d6c8;border-radius:30px;padding:8px 10px;font-size:11px}
+.chip:hover{border-color:var(--green);color:var(--green)}
+.list-item{
+  display:flex;gap:12px;align-items:flex-start;padding:15px 0;
+  border-bottom:1px solid #263c2e;
+}
+.list-item:last-child{border-bottom:0}
+.list-icon{width:35px;height:35px;flex-shrink:0;display:grid;place-items:center;border-radius:10px;background:#1d3526;font-size:16px}
+.list-item strong{font-size:12px;display:block;margin-bottom:5px}
+.list-item p{font-size:11px;color:var(--muted);line-height:1.7;margin:0}
+.cause-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+.cause-btn{
+  border:1px solid var(--line);background:var(--panel);color:var(--text);
+  padding:17px;border-radius:13px;text-align:left;min-height:110px;
+}
+.cause-btn:hover,.cause-btn.selected{border-color:var(--green);background:#1a3022}
+.cause-btn .cause-icon{font-size:22px;margin-bottom:12px}
+.cause-btn strong{display:block;font-size:12px;margin-bottom:6px}
+.cause-btn span{color:var(--muted);font-size:11px;line-height:1.5}
+.guide-result{margin-top:18px}
+.guide-result h3{font-size:15px;margin:0 0 12px}
+.guide-result p,.guide-result li{font-size:12px;line-height:1.8;color:#c3d3c7}
+.guide-result ul{padding-left:18px}
+.warning-note{border-left:3px solid var(--yellow);padding:12px 14px;background:#282718;color:#dfd3a9;font-size:11px;line-height:1.8;border-radius:0 8px 8px 0;margin-top:15px}
+.checklist{display:flex;flex-direction:column;gap:10px}
+.check-row{
+  display:flex;align-items:flex-start;gap:12px;background:#0e1d14;
+  border:1px solid #263f30;border-radius:11px;padding:15px;cursor:pointer;
+}
+.check-row input{width:17px;height:17px;margin:1px 0 0;accent-color:var(--green);flex-shrink:0}
+.check-row strong{font-size:12px;display:block;margin-bottom:5px}
+.check-row span{font-size:11px;color:var(--muted);line-height:1.6}
+.check-row.done{opacity:.65}
+.check-row.done strong{text-decoration:line-through}
+.check-progress{font-size:12px;color:var(--green2);margin-bottom:13px}
+.footer-note{color:#708778;font-size:10px;line-height:1.8;margin-top:22px}
+.empty{color:var(--muted);font-size:12px;padding:20px;text-align:center}
+@media(max-width:900px){
+ .sidebar{width:190px;padding:20px 10px}
+ main{padding:24px 20px}
+ .stats{grid-template-columns:1fr 1fr}
+ .two{grid-template-columns:1fr}
+}
+@media(max-width:650px){
+ .app{display:block}
+ .sidebar{width:100%;padding:16px;border-right:0;border-bottom:1px solid var(--line)}
+ .logo{padding:0 5px}
+ .tagline{padding:5px 5px 15px}
+ .menu-label,.side-note{display:none}
+ .nav-wrap{display:flex;gap:5px;overflow-x:auto}
+ .nav{width:auto;white-space:nowrap;margin:0;padding:10px;font-size:11px}
+ main{padding:22px 14px}
+ .topbar{align-items:flex-start}
+ h1{font-size:23px}
+ .status-pill{font-size:10px;padding:8px}
+ .stats{grid-template-columns:1fr}
+ .cause-grid{grid-template-columns:1fr}
+ .appliance-row{grid-template-columns:minmax(0,1fr) 75px 28px}
+ .appliance-row .watts{display:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="logo">VOLTUNE <span>⚡</span></div>
+    <div class="tagline">SMART ELECTRICAL SAFETY</div>
+    <div class="menu-label">MENU</div>
+    <div class="nav-wrap">
+      <button class="nav active" data-page="dashboard"><span class="ico">▦</span> 대시보드</button>
+      <button class="nav" data-page="power"><span class="ico">ϟ</span> 전력 계산</button>
+      <button class="nav" data-page="diagnosis"><span class="ico">⌁</span> 차단기 진단</button>
+      <button class="nav" data-page="checklist"><span class="ico">☑</span> 외출 체크</button>
+    </div>
+    <div class="side-note">
+      <strong>⚡ VOLTUNE TIP</strong>
+      전기 안전은 작은 확인에서 시작돼요.<br>
+      사용량을 확인하고 위험 신호를 놓치지 마세요.
+    </div>
+  </aside>
+
+  <main>
+    <header class="topbar">
+      <div>
+        <div class="eyebrow">ELECTRICAL SAFETY SYSTEM</div>
+        <h1 id="pageTitle">전기 안전 대시보드</h1>
+        <div class="subtitle" id="pageSubtitle">우리 집 전력 사용량을 확인하고 안전한 생활을 시작해 보세요.</div>
+      </div>
+      <div class="status-pill">● SMART HOME CARE</div>
+    </header>
+
+    <!-- 대시보드 -->
+    <section class="page active" id="dashboard">
+      <div class="grid stats">
+        <div class="card">
+          <div class="card-head"><span class="card-title">현재 예상 사용 전력</span><span>ϟ</span></div>
+          <div class="big-number"><span id="dashWatts">0</span><small> W</small></div>
+          <div class="stat-foot">입력한 가전제품 소비전력 합계</div>
+        </div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">멀티탭 용량 사용률</span><span>◉</span></div>
+          <div class="big-number"><span id="dashPercent">0</span><small> %</small></div>
+          <div class="stat-foot" id="dashPercentText">전력 계산 메뉴에서 제품을 설정해 주세요.</div>
+        </div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">외출 체크</span><span>✓</span></div>
+          <div class="big-number"><span id="dashChecks">0</span><small> / 5 완료</small></div>
+          <div class="stat-foot">외출 전 안전 항목 확인하기</div>
+        </div>
+      </div>
+
+      <div class="grid two">
+        <div class="card">
+          <div class="card-head">
+            <span class="card-title">전력 사용 현황</span>
+            <button class="btn secondary small" data-go="power">계산하기 ↗</button>
+          </div>
+          <div class="gauge-wrap">
+            <div class="gauge"><div class="gauge-arc"></div><div class="gauge-cover"><div class="gauge-value"><span id="dashGauge">0</span>%</div></div></div>
+            <div class="gauge-caption">입력한 멀티탭 용량 대비 사용률</div>
+          </div>
+          <div class="progress"><div class="progress-fill" id="dashBar"></div></div>
+          <div class="summary-line"><span>사용 전력</span><strong id="dashUsed">0 W</strong></div>
+          <div class="summary-line"><span>입력한 허용 용량</span><strong id="dashCapacity">2,000 W</strong></div>
+          <div id="dashMessage" class="result-message">가전제품을 선택하면 사용량을 확인할 수 있어요.</div>
+        </div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">안전 관리 바로가기</span><span class="small-label">QUICK MENU</span></div>
+          <div class="list-item">
+            <div class="list-icon">ϟ</div><div><strong>멀티탭 용량 계산</strong><p>연결된 가전제품의 소비전력을 합산하고 용량 대비 사용률을 확인해요.</p><button class="btn secondary small" data-go="power" style="margin-top:10px">전력 계산하기</button></div>
+          </div>
+          <div class="list-item">
+            <div class="list-icon">⌁</div><div><strong>차단기 작동 원인별 가이드</strong><p>차단기가 내려간 상황을 선택해 안전한 대처 방법을 확인해요.</p><button class="btn secondary small" data-go="diagnosis" style="margin-top:10px">원인 확인하기</button></div>
+          </div>
+          <div class="list-item">
+            <div class="list-icon">☑</div><div><strong>외출 전 체크리스트</strong><p>집을 나서기 전 전기제품과 주변 상태를 점검해요.</p><button class="btn secondary small" data-go="checklist" style="margin-top:10px">체크 시작하기</button></div>
+          </div>
+        </div>
+      </div>
+      <p class="footer-note">※ 이 화면은 사용자가 입력한 소비전력을 바탕으로 계산하는 참고용 시뮬레이션입니다. 실제 전기 설비 상태를 측정하거나 차단기 작동을 예측하지 않습니다.</p>
+    </section>
+
+    <!-- 전력 계산 -->
+    <section class="page" id="power">
+      <div class="section-top">
+        <h2 class="section-title">멀티탭 전력 계산</h2>
+        <p class="section-desc">사용 중인 멀티탭의 정격 용량과 연결된 가전제품을 설정해 전력 사용량을 확인해 보세요.</p>
+      </div>
+      <div class="grid two">
+        <div class="card">
+          <div class="card-head"><span class="card-title">01 / 멀티탭 설정</span><span class="small-label">POWER STRIP</span></div>
+          <div class="field">
+            <label for="stripType">멀티탭 제품 종류</label>
+            <select id="stripType">
+              <option value="2000">일반 멀티탭 · 2,000 W</option>
+              <option value="2800">고용량 멀티탭 · 2,800 W</option>
+              <option value="3000">고용량 멀티탭 · 3,000 W</option>
+              <option value="custom">직접 입력</option>
+            </select>
+            <div class="help">제품 라벨에 표시된 정격 용량(W)을 확인해 선택하세요. 제품마다 용량이 다를 수 있어요.</div>
+          </div>
+          <div class="field">
+            <label for="capacity">멀티탭 허용 용량 (W)</label>
+            <input id="capacity" type="number" min="1" max="100000" value="2000">
+          </div>
+          <div class="card-head" style="margin-top:28px"><span class="card-title">02 / 연결된 가전제품</span><span class="small-label">APPLIANCES</span></div>
+          <div class="help">제품을 추가한 뒤 소비전력을 확인하세요. 실제 소비전력은 제품 라벨을 우선해 입력하세요.</div>
+          <div class="device-presets">
+            <button class="chip" data-add="노트북">＋ 노트북</button>
+            <button class="chip" data-add="전자레인지">＋ 전자레인지</button>
+            <button class="chip" data-add="전기포트">＋ 전기포트</button>
+            <button class="chip" data-add="헤어드라이어">＋ 드라이어</button>
+            <button class="chip" data-add="전기히터">＋ 전기히터</button>
+            <button class="chip" data-add="TV">＋ TV</button>
+            <button class="chip" data-add="냉장고">＋ 냉장고</button>
+            <button class="chip" data-add="기타">＋ 직접 입력</button>
+          </div>
+          <div id="applianceList" class="appliance-list"></div>
+          <button class="btn secondary" id="addAppliance">＋ 가전제품 추가</button>
+        </div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">03 / 계산 결과</span><span class="small-label">LIVE ANALYSIS</span></div>
+          <div class="gauge-wrap">
+            <div class="gauge"><div class="gauge-arc"></div><div class="gauge-cover"><div class="gauge-value"><span id="powerGauge">0</span>%</div></div></div>
+            <div class="gauge-caption">허용 용량 대비 입력 전력 사용률</div>
+          </div>
+          <div class="big-number"><span id="totalWatts">0</span><small> W 사용 중</small></div>
+          <div class="progress"><div class="progress-fill" id="powerBar"></div></div>
+          <div class="summary-box">
+            <div class="summary-line"><span>입력한 허용 용량</span><strong id="powerCapacity">2,000 W</strong></div>
+            <div class="summary-line"><span>예상 사용 전력</span><strong id="powerUsed">0 W</strong></div>
+            <div class="summary-line"><span>남은 용량(계산상)</span><strong id="powerRemaining">2,000 W</strong></div>
+            <div class="summary-line"><span>선택한 가전제품</span><strong id="deviceCount">0개</strong></div>
+          </div>
+          <div id="powerMessage" class="result-message">가전제품을 추가하면 결과가 표시됩니다.</div>
+          <div class="warning-note">멀티탭의 정격 용량을 넘겨 사용하지 마세요. 용량 이내라고 해도 벽면 콘센트, 배선, 제품 상태 등에 따라 안전이 보장되는 것은 아닙니다. 멀티탭을 다른 멀티탭에 연속 연결하지 마세요.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 차단기 진단 -->
+    <section class="page" id="diagnosis">
+      <div class="section-top">
+        <h2 class="section-title">차단기 작동 원인별 가이드</h2>
+        <p class="section-desc">현재 상황과 가장 가까운 항목을 선택하세요. 이 가이드는 원인을 확정하는 진단이 아니라 안전한 다음 행동을 안내합니다.</p>
+      </div>
+      <div class="grid cause-grid">
+        <button class="cause-btn" data-cause="load"><div class="cause-icon">ϟ</div><strong>여러 제품을 함께 사용했어요</strong><span>전열기구나 고전력 가전을 동시에 사용한 경우</span></button>
+        <button class="cause-btn" data-cause="appliance"><div class="cause-icon">▣</div><strong>특정 제품을 켜면 내려가요</strong><span>특정 가전제품 사용과 차단기 작동이 반복되는 경우</span></button>
+        <button class="cause-btn" data-cause="leak"><div class="cause-icon">⌁</div><strong>누전이 의심돼요</strong><span>물기, 손상된 전선, 전기제품 주변의 이상 징후</span></button>
+        <button class="cause-btn" data-cause="danger"><div class="cause-icon">⚠</div><strong>타는 냄새·스파크·이상 소리</strong><span>화재나 감전 위험이 의심되는 위험 신호</span></button>
+      </div>
+      <div class="card guide-result" id="guideResult">
+        <div class="empty">위 항목 중 하나를 선택하면 안전 가이드가 표시됩니다.</div>
+      </div>
+      <div class="warning-note">차단기를 반복해서 올리거나, 콘센트·차단기 내부를 직접 분해하지 마세요. 원인이 확인되지 않거나 차단기가 반복해서 내려가면 전기 전문가에게 점검을 요청하세요.</div>
+    </section>
+
+    <!-- 외출 체크 -->
+    <section class="page" id="checklist">
+      <div class="section-top">
+        <h2 class="section-title">외출 전 안전 체크</h2>
+        <p class="section-desc">집을 나서기 전 확인할 항목을 체크해 보세요. 체크 상태는 이 페이지를 열어 둔 동안 유지됩니다.</p>
+      </div>
+      <div class="grid two">
+        <div class="card">
+          <div class="card-head"><span class="card-title">LEAVING HOME</span><span class="small-label" id="checkPercent">0% 완료</span></div>
+          <div class="check-progress" id="checkSummary">5개 중 0개 확인 완료</div>
+          <div class="progress"><div class="progress-fill" id="checkBar"></div></div>
+          <div class="checklist">
+            <label class="check-row"><input type="checkbox" class="safety-check"><div><strong>사용하지 않는 전기제품 확인</strong><span>불필요한 제품의 전원을 끄고, 제품 설명서에 맞게 사용해요.</span></div></label>
+            <label class="check-row"><input type="checkbox" class="safety-check"><div><strong>전열기구 상태 확인</strong><span>다리미, 전기히터 등 열을 발생시키는 제품을 확인해요.</span></div></label>
+            <label class="check-row"><input type="checkbox" class="safety-check"><div><strong>멀티탭과 콘센트 주변 확인</strong><span>과도한 발열, 변색, 손상 흔적이 없는지 눈으로 확인해요.</span></div></label>
+            <label class="check-row"><input type="checkbox" class="safety-check"><div><strong>전선과 주변 물기 확인</strong><span>손상된 전선이나 전기제품 주변의 물기를 확인해요. 젖은 손으로 만지지 마세요.</span></div></label>
+            <label class="check-row"><input type="checkbox" class="safety-check"><div><strong>이상 징후가 있는 제품 확인</strong><span>타는 냄새, 스파크, 이상 소리가 있다면 사용하지 말고 점검을 요청해요.</span></div></label>
+          </div>
+          <div style="display:flex;gap:9px;margin-top:20px;flex-wrap:wrap">
+            <button class="btn" id="resetChecks">체크 초기화</button>
+            <button class="btn secondary" id="allChecks">모두 확인 표시</button>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head"><span class="card-title">외출 전 안전 팁</span><span>⌂</span></div>
+          <div class="list-item"><div class="list-icon">✓</div><div><strong>전원을 끄는 것만으로 충분하지 않을 수 있어요</strong><p>제품마다 안전한 전원 차단 방법이 다르므로 사용 설명서를 따라 주세요.</p></div></div>
+          <div class="list-item"><div class="list-icon">ϟ</div><div><strong>멀티탭에 과부하를 주지 않기</strong><p>여러 고전력 제품을 한 멀티탭에 연결하지 말고 정격 용량을 확인하세요.</p></div></div>
+          <div class="list-item"><div class="list-icon">!</div><div><strong>위험 신호를 발견했다면</strong><p>문제가 있는 제품을 만지거나 다시 사용하지 말고 안전한 곳에서 전문가에게 연락하세요. 불이 나면 대피 후 119에 신고하세요.</p></div></div>
+          <div class="warning-note">체크리스트는 사용자의 확인을 돕는 도구이며, 집의 전기 상태를 자동으로 감지하거나 안전을 보증하지 않습니다.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+const applianceData = {
+  "노트북": {watts:65},
+  "전자레인지": {watts:1200},
+  "전기포트": {watts:1500},
+  "헤어드라이어": {watts:1200},
+  "전기히터": {watts:1500},
+  "TV": {watts:100},
+  "냉장고": {watts:200},
+  "선풍기": {watts:50},
+  "모니터": {watts:40},
+  "휴대폰 충전기": {watts:20},
+  "밥솥": {watts:1000},
+  "청소기": {watts:1000},
+  "기타": {watts:100}
+};
+
+const pageInfo = {
+  dashboard: ["전기 안전 대시보드","우리 집 전력 사용량을 확인하고 안전한 생활을 시작해 보세요."],
+  power: ["멀티탭 전력 계산","멀티탭 용량과 가전제품 소비전력을 입력해 사용량을 계산해요."],
+  diagnosis: ["차단기 작동 가이드","상황별 안전한 대처 방법을 확인해 보세요."],
+  checklist: ["외출 전 안전 체크","외출 전 전기제품과 주변 상태를 확인해요."]
+};
+
+function goPage(name){
+  document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===name));
+  document.querySelectorAll(".nav").forEach(b=>b.classList.toggle("active",b.dataset.page===name));
+  document.getElementById("pageTitle").textContent=pageInfo[name][0];
+  document.getElementById("pageSubtitle").textContent=pageInfo[name][1];
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+document.querySelectorAll(".nav").forEach(b=>b.addEventListener("click",()=>goPage(b.dataset.page)));
+document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",()=>goPage(b.dataset.go)));
+
+const stripType=document.getElementById("stripType");
+const capacityInput=document.getElementById("capacity");
+const applianceList=document.getElementById("applianceList");
+
+stripType.addEventListener("change",()=>{
+  if(stripType.value!=="custom") capacityInput.value=stripType.value;
+  calculatePower();
+});
+capacityInput.addEventListener("input",()=>{
+  if(String(capacityInput.value)!==stripType.value) stripType.value="custom";
+  calculatePower();
+});
+
+function createApplianceRow(name="노트북",watts=null){
+  const row=document.createElement("div");
+  row.className="appliance-row";
+  const select=document.createElement("select");
+  select.setAttribute("aria-label","가전제품 종류");
+  Object.keys(applianceData).forEach(key=>{
+    const opt=document.createElement("option");
+    opt.value=key;opt.textContent=key;
+    if(key===name)opt.selected=true;
+    select.appendChild(opt);
+  });
+  const input=document.createElement("input");
+  input.type="number";input.min="0";input.max="100000";
+  input.value=watts===null?applianceData[name].watts:watts;
+  input.setAttribute("aria-label","소비전력 W");
+  const wattLabel=document.createElement("div");
+  wattLabel.className="watts";wattLabel.textContent="소비전력";
+  const remove=document.createElement("button");
+  remove.className="remove";remove.type="button";remove.textContent="×";
+  remove.title="제품 삭제";
+  select.addEventListener("change",()=>{
+    input.value=applianceData[select.value].watts;
+    calculatePower();
+  });
+  input.addEventListener("input",calculatePower);
+  remove.addEventListener("click",()=>{row.remove();calculatePower();});
+  row.append(select,input,wattLabel,remove);
+  applianceList.appendChild(row);
+  calculatePower();
+}
+
+document.querySelectorAll("[data-add]").forEach(b=>{
+  b.addEventListener("click",()=>createApplianceRow(b.dataset.add));
+});
+document.getElementById("addAppliance").addEventListener("click",()=>createApplianceRow("기타"));
+
+function formatNumber(n){return Math.round(n).toLocaleString("ko-KR");}
+function getPower(){
+  let total=0,count=0;
+  applianceList.querySelectorAll(".appliance-row").forEach(row=>{
+    const input=row.querySelector("input");
+    const val=Math.max(0,Number(input.value)||0);
+    total+=val;count++;
+  });
+  const capacity=Math.max(1,Number(capacityInput.value)||1);
+  const percent=Math.round(total/capacity*100);
+  return {total,count,capacity,percent,remaining:capacity-total};
+}
+function setGauge(id,percent){
+  const el=document.getElementById(id);
+  el.textContent=percent;
+}
+function setBar(id,percent){
+  const bar=document.getElementById(id);
+  bar.style.width=Math.min(100,Math.max(0,percent))+"%";
+  if(percent>=100)bar.style.background="var(--red)";
+  else if(percent>=80)bar.style.background="var(--yellow)";
+  else bar.style.background="var(--green)";
+}
+function messageFor(percent,total,capacity){
+  if(total>capacity) return {cls:"alert",text:"입력한 소비전력 합계가 설정한 멀티탭 용량을 초과합니다. 연결 구성을 다시 확인하고 고전력 제품을 함께 사용하지 마세요."};
+  if(percent>=80) return {cls:"warn",text:"입력한 용량의 80% 이상을 사용하고 있습니다. 제품 라벨과 사용 설명서를 확인하고 전열기구 등 고전력 제품의 동시 사용을 피하세요."};
+  if(total===0) return {cls:"",text:"가전제품을 추가하면 입력한 용량 대비 사용량을 확인할 수 있어요."};
+  return {cls:"",text:"입력한 소비전력 합계가 설정한 멀티탭 용량 이내입니다. 다만 이것만으로 전기 안전이 보장되지는 않으니 제품 상태와 정격을 함께 확인하세요."};
+}
+function setMessage(id,data){
+  const el=document.getElementById(id);
+  el.className="result-message"+(data.cls?" "+data.cls:"");
+  el.textContent=data.text;
+}
+function calculatePower(){
+  const d=getPower();
+  setGauge("powerGauge",d.percent);
+  setBar("powerBar",d.percent);
+  document.getElementById("totalWatts").textContent=formatNumber(d.total);
+  document.getElementById("powerCapacity").textContent=formatNumber(d.capacity)+" W";
+  document.getElementById("powerUsed").textContent=formatNumber(d.total)+" W";
+  document.getElementById("powerRemaining").textContent=(d.remaining<0?"−":"")+formatNumber(Math.abs(d.remaining))+" W";
+  document.getElementById("deviceCount").textContent=d.count+"개";
+  setMessage("powerMessage",messageFor(d.percent,d.total,d.capacity));
+
+  document.getElementById("dashWatts").textContent=formatNumber(d.total);
+  document.getElementById("dashPercent").textContent=d.percent;
+  document.getElementById("dashGauge").textContent=d.percent;
+  document.getElementById("dashUsed").textContent=formatNumber(d.total)+" W";
+  document.getElementById("dashCapacity").textContent=formatNumber(d.capacity)+" W";
+  document.getElementById("dashPercentText").textContent=d.percent>=100?"입력 용량 초과":d.percent>=80?"사용량이 높은 편입니다":"입력한 용량 대비 사용량";
+  setBar("dashBar",d.percent);
+  setMessage("dashMessage",messageFor(d.percent,d.total,d.capacity));
+}
+createApplianceRow("노트북");
+createApplianceRow("모니터");
+
+const guides={
+  load:{
+    title:"여러 제품을 함께 사용한 경우",
+    intro:"여러 기기의 동시 사용으로 부하가 커졌을 가능성이 있지만, 차단기 작동 원인은 이것만으로 확정할 수 없습니다.",
+    steps:["안전하다면 고전력 제품의 사용을 중단하세요.","멀티탭과 제품 라벨의 정격 용량을 확인하세요.","고전력 제품은 사용 설명서에 따라 적절한 콘센트에 연결하세요.","차단기가 반복해서 내려가면 다시 올리기를 반복하지 말고 전문가에게 점검을 요청하세요."]
+  },
+  appliance:{
+    title:"특정 제품 사용 시 차단기가 내려가는 경우",
+    intro:"제품 자체의 이상, 회로 과부하 또는 다른 전기적 문제일 수 있습니다.",
+    steps:["해당 제품의 사용을 중단하세요.","플러그나 전선이 손상되었거나 뜨거워 보이면 만지지 마세요.","제품을 반복해서 연결하거나 차단기를 반복해서 올리지 마세요.","전기 전문가에게 점검을 요청하고, 제품 이상이 의심되면 제조사 서비스센터에 문의하세요."]
+  },
+  leak:{
+    title:"누전이 의심되는 경우",
+    intro:"물기나 손상된 전기제품 주변은 감전 위험이 있을 수 있습니다. 눈으로 보이는 것만으로 누전 여부를 확정할 수 없습니다.",
+    steps:["젖은 손으로 플러그나 전기제품을 만지지 마세요.","물에 젖은 부위나 손상된 전선에 접근하지 마세요.","안전한 거리를 유지하고 전기 전문가에게 점검을 요청하세요.","누전 의심 상태에서 차단기를 반복해서 올리지 마세요."]
+  },
+  danger:{
+    title:"타는 냄새·스파크·이상 소리가 나는 경우",
+    intro:"화재 또는 감전 위험이 있을 수 있는 긴급한 신호입니다.",
+    steps:["해당 제품이나 멀티탭을 만지거나 다시 사용하지 마세요.","안전하게 접근할 수 없다면 플러그를 뽑으려 하지 마세요.","사람들을 위험 구역에서 멀리 이동시키세요.","연기나 불꽃, 화재 위험이 있으면 대피한 뒤 119에 신고하세요. 이후 전문가의 점검을 받으세요."]
+  }
+};
+document.querySelectorAll("[data-cause]").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    document.querySelectorAll("[data-cause]").forEach(b=>b.classList.remove("selected"));
+    btn.classList.add("selected");
+    const g=guides[btn.dataset.cause];
+    const result=document.getElementById("guideResult");
+    result.innerHTML="";
+    const title=document.createElement("h3");title.textContent=g.title;
+    const intro=document.createElement("p");intro.textContent=g.intro;
+    const ul=document.createElement("ul");
+    g.steps.forEach(step=>{const li=document.createElement("li");li.textContent=step;ul.appendChild(li);});
+    result.append(title,intro,ul);
+    if(btn.dataset.cause==="danger"||btn.dataset.cause==="leak"){
+      const warn=document.createElement("div");
+      warn.className="warning-note";
+      warn.textContent="안전이 확인되기 전까지 해당 설비를 다시 사용하지 마세요.";
+      result.appendChild(warn);
+    }
+  });
+});
+
+const checks=[...document.querySelectorAll(".safety-check")];
+function updateChecks(){
+  let done=0;
+  checks.forEach(c=>{
+    if(c.checked){done++;c.closest(".check-row").classList.add("done");}
+    else c.closest(".check-row").classList.remove("done");
+  });
+  const pct=Math.round(done/checks.length*100);
+  document.getElementById("checkPercent").textContent=pct+"% 완료";
+  document.getElementById("checkSummary").textContent=checks.length+"개 중 "+done+"개 확인 완료";
+  setBar("checkBar",pct);
+  document.getElementById("dashChecks").textContent=done;
+}
+checks.forEach(c=>c.addEventListener("change",updateChecks));
+document.getElementById("resetChecks").addEventListener("click",()=>{
+  checks.forEach(c=>c.checked=false);updateChecks();
+});
+document.getElementById("allChecks").addEventListener("click",()=>{
+  checks.forEach(c=>c.checked=true);updateChecks();
+});
+updateChecks();
+calculatePower();
+</script>
+</body>
+</html>
+
